@@ -23,17 +23,27 @@ export function AppProvider({ children }) {
     setSetupDoneState(storage.isSetupDone(email));
   }, []);
 
-  // ── On mount: restore session ─────────────────────────────
+  // ── On mount: restore session + load global theme ────────
   useEffect(() => {
+    // Theme is stored globally so it works on landing page without login
+    const savedTheme = localStorage.getItem('attendify_theme') || 'light';
+    setPreferencesState({ theme: savedTheme });
+
     const u = storage.getUser();
     if (u) {
       setUser(u);
       loadUserData(u.email);
+      // Override with per-user saved theme preference if it exists
+      const userPrefs = storage.getPreferences(u.email);
+      if (userPrefs?.theme) {
+        setPreferencesState({ theme: userPrefs.theme });
+        localStorage.setItem('attendify_theme', userPrefs.theme);
+      }
     }
     setLoading(false);
   }, [loadUserData]);
 
-  // ── Apply theme ───────────────────────────────────────────
+  // ── Apply theme whenever preferences change ──────────────
   useEffect(() => {
     document.documentElement.classList.toggle('dark', preferences.theme === 'dark');
   }, [preferences.theme]);
@@ -122,10 +132,15 @@ export function AppProvider({ children }) {
   }, [user, holidays, addToast]);
 
   const setTheme = useCallback((theme) => {
-    if (!user) return;
-    const updated = { ...preferences, theme };
-    storage.setPreferences(user.email, updated);
-    setPreferencesState(updated);
+    // Save theme globally (works on landing page even before login)
+    localStorage.setItem('attendify_theme', theme);
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    setPreferencesState({ theme });
+    // Also save to per-user prefs if logged in
+    if (user) {
+      const updated = { ...preferences, theme };
+      storage.setPreferences(user.email, updated);
+    }
   }, [user, preferences]);
 
   const completeSetup = useCallback((timetableData, semesterDate) => {

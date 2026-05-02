@@ -48,12 +48,7 @@ const features = [
   },
 ];
 
-const tools = [
-  { icon: TrendingUp, color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/30', name: 'Projection', desc: 'Projected % after a future period' },
-  { icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-100 dark:bg-orange-900/30', name: 'Absence Planner', desc: 'Impact of planned absences' },
-  { icon: Zap, color: 'text-pink-600', bg: 'bg-pink-100 dark:bg-pink-900/30', name: 'Skip Planner', desc: 'Max classes you can skip' },
-  { icon: Hash, color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-900/30', name: 'Class Counter', desc: 'Count classes in a date range' },
-];
+// Tool list moved to TimetableMockup component below
 
 const faqs = [
   { q: 'How does the timetable upload work?', a: 'You upload a JPG or PNG photo of your college timetable. Our OCR reads subjects, days and periods automatically. You can then review and correct any mistakes in an editable grid before saving.' },
@@ -76,6 +71,138 @@ function FaqItem({ q, a, open, onToggle }) {
           {a}
         </div>
       )}
+    </div>
+  );
+}
+
+
+// ── Timetable Mockup (matches real college timetable format) ──────
+const TT_PERIODS = [
+  '08:00–08:50', '09:00–09:50', '10:00–10:50',
+  '11:00–11:50', '13:00–13:50', '14:00–14:50',
+  '15:00–15:50', '16:00–16:50',
+];
+
+const TT_DATA = [
+  {
+    day: 'Monday',
+    slots: ['CS2011', 'MATH201', 'PHY301', 'CS2031', null, 'CS2041', 'MATH201', null],
+  },
+  {
+    day: 'Tuesday',
+    slots: ['CS2011', 'MATH201', 'HSMCH102', 'PHY301', 'CS2031', null, null, null],
+  },
+  {
+    day: 'Wednesday',
+    slots: ['GCGC1011', 'PHY301', 'CS2051', 'CS2031', null, null, null, null],
+  },
+  {
+    day: 'Thursday',
+    slots: ['CS2011', 'MATH201', 'PHY301', null, 'CS2031', 'CIVL1011', 'CS2041', 'HSMCH102'],
+  },
+  {
+    day: 'Friday',
+    slots: ['CS2011', 'HSMCH102', 'PHY301', 'MATH201', null, 'CIVL1011', 'CS2041', 'CS2031'],
+  },
+];
+
+// Assign a soft colour to each subject
+const SUBJECT_COLORS = {
+  'HSMCH102':  'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
+  'GCGC1011':  'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
+  'CIVL1011':  'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300',
+  'CS2011':    'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
+  'CS2031':    'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
+  'CS2041':    'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300',
+  'CS2051':    'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300',
+  'MATH201':   'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300',
+  'PHY301':    'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300',
+};
+const DEFAULT_COLOR = 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400';
+
+function TimetableMockup() {
+  return (
+    <div className="relative mx-auto max-w-5xl">
+      {/* Outer glow */}
+      <div className="absolute -inset-1 bg-gradient-to-r from-green-400 to-emerald-500 rounded-3xl blur-lg opacity-20 pointer-events-none" />
+
+      <div className="relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-3xl border border-gray-200 dark:border-gray-700 shadow-2xl overflow-hidden">
+
+        {/* Header bar */}
+        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-gray-800 bg-white/90 dark:bg-gray-900/90">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+              <span className="text-white text-xs">🎓</span>
+            </div>
+            <span className="font-display font-bold text-sm text-gray-700 dark:text-gray-300">Your Timetable</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
+            <span className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
+            <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
+          </div>
+        </div>
+
+        {/* Timetable grid */}
+        <div className="overflow-x-auto p-3">
+          <table className="w-full text-xs min-w-[640px] border-separate border-spacing-1">
+            <thead>
+              <tr>
+                <th className="px-3 py-2 text-left font-bold text-gray-500 dark:text-gray-400 bg-green-50 dark:bg-green-900/20 rounded-lg w-24">
+                  WEEKDAY
+                </th>
+                {TT_PERIODS.map(p => (
+                  <th key={p} className="px-2 py-2 text-center font-semibold text-gray-500 dark:text-gray-400 bg-green-50 dark:bg-green-900/20 rounded-lg whitespace-nowrap">
+                    {p}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {TT_DATA.map((row, ri) => (
+                <tr key={row.day}>
+                  <td className="px-3 py-2 font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-center">
+                    {row.day}
+                  </td>
+                  {row.slots.map((subject, si) => (
+                    <td key={si} className="text-center py-1 px-0.5">
+                      {subject ? (
+                        <span className={`inline-block px-1.5 py-1.5 rounded-lg font-bold leading-tight w-full text-center ${SUBJECT_COLORS[subject] || DEFAULT_COLOR}`}>
+                          {subject}
+                        </span>
+                      ) : (
+                        <span className="inline-block w-full py-1.5 text-gray-200 dark:text-gray-700 text-center">—</span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Bottom bar — mini result */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 px-5 py-3 border-t border-gray-100 dark:border-gray-800 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/20">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-green-500 flex items-center justify-center flex-shrink-0">
+              <span className="text-white text-sm font-bold">⚡</span>
+            </div>
+            <div>
+              <div className="text-xs font-semibold text-gray-700 dark:text-gray-300">Skip Planner result</div>
+              <div className="text-[11px] text-gray-500 dark:text-gray-400">Current: 78% · Next 2 weeks</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 sm:text-right">
+            <div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">Max you can skip</div>
+              <div className="text-sm font-display font-extrabold text-green-600 dark:text-green-400">4 classes ✓</div>
+            </div>
+            <div className="w-8 h-8 rounded-xl bg-white dark:bg-gray-800 border border-green-200 dark:border-green-800 flex items-center justify-center text-base">
+              🎉
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -142,38 +269,48 @@ export default function LandingPage() {
               Login to Account
             </Link>
           </div>
+          
+          <div className="relative mx-auto max-w-5xl mb-10">
 
-          {/* Dashboard mockup */}
-          <div className="relative mx-auto max-w-3xl">
-            <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-md rounded-3xl p-4 border border-gray-200 dark:border-gray-700 shadow-2xl">
-              <div className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 rounded-2xl p-5">
-                <div className="flex items-center justify-between mb-5">
-                  <span className="text-sm font-display font-bold text-gray-700 dark:text-gray-300">Attendance Calculators</span>
-                  <span className="text-xs text-green-600 bg-green-50 dark:bg-green-900/30 px-2 py-0.5 rounded-full font-semibold">4 Tools</span>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {tools.map(t => (
-                    <div key={t.name} className="bg-white dark:bg-gray-800 rounded-xl p-3 border border-gray-100 dark:border-gray-700 text-center">
-                      <div className={`w-8 h-8 rounded-lg ${t.bg} flex items-center justify-center mx-auto mb-2`}>
-                        <t.icon className={`w-4 h-4 ${t.color}`} />
-                      </div>
-                      <div className="text-xs font-bold text-gray-800 dark:text-white">{t.name}</div>
-                      <div className="text-[10px] text-gray-400 mt-0.5">{t.desc}</div>
-                    </div>
-                  ))}
-                </div>
-                {/* Mini projection preview */}
-                <div className="mt-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 flex items-center justify-between">
-                  <div>
-                    <div className="text-xs text-gray-500 mb-0.5">Projection result</div>
-                    <div className="text-sm font-bold text-gray-800 dark:text-white">Current: 72% → Projected: <span className="text-green-600">78.4%</span></div>
-                    <div className="text-xs text-green-600 font-semibold mt-0.5">✓ You can skip 3 more classes safely</div>
+            {/* Glow */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-green-400 to-emerald-500 rounded-3xl blur-2xl opacity-25 pointer-events-none" />
+
+            {/* Card */}
+            <div className="relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-3xl border border-gray-200 dark:border-gray-700 shadow-2xl overflow-hidden">
+
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-gray-800 bg-white/90 dark:bg-gray-900/90">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+                    <span className="text-white text-xs">📋</span>
                   </div>
-                  <div className="text-3xl">🎉</div>
+                  <span className="font-display font-bold text-sm text-gray-700 dark:text-gray-300">
+                    Timetable Format
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
                 </div>
               </div>
+
+              {/* 🔥 Scrollable Image */}
+              <div className="overflow-x-auto p-4">
+                <div className="min-w-[700px] md:min-w-0 flex justify-center">
+                  <img 
+                    src="/images/hero.png"
+                    alt="Timetable Format"
+                    className="w-full max-w-4xl rounded-xl"
+                  />
+                </div>
+              </div>
+
             </div>
           </div>
+          {/* Existing timetable */}
+          <TimetableMockup />
         </div>
       </section>
 
