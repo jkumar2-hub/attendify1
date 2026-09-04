@@ -3,6 +3,8 @@
 A full-stack Next.js app for college students to track attendance, plan skips, and stay above 75%.
 
 ---
+## Live URLs
+- **WebApplication:** https://attendify-ten-inky.vercel.app
 
 ## ✨ Features
 
